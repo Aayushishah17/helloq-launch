@@ -1,7 +1,7 @@
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import VideoSection from "@/components/VideoSection";
-import AppPreviewSection from "@/components/AppPreviewSection";
+import PhoneCarousel from "@/components/PhoneCarousel";
 import FeaturesSection from "@/components/FeaturesSection";
 import CommunitySection from "@/components/CommunitySection";
 import AppExperienceSection from "@/components/AppExperienceSection";
@@ -17,7 +17,7 @@ const Index = () => {
       <Navbar />
       <HeroSection />
       <VideoSection />
-      <AppPreviewSection />
+      <PhoneCarousel />
       <FeaturesSection />
       <CommunitySection />
       <AppExperienceSection />
