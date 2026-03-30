@@ -1,67 +1,16 @@
-import { useRef, useEffect, useCallback } from "react";
+import { useRef, useCallback } from "react";
 import { motion } from "framer-motion";
-import phoneDiscover from "@/assets/phone-discover.png";
-import phoneChat from "@/assets/phone-chat.png";
-import phoneProfile from "@/assets/phone-profile.png";
+import screenProfile from "@/assets/screen-profile.png";
+import screenDiscover from "@/assets/screen-discover.png";
+import screenChat from "@/assets/screen-chat.png";
 
 const screens = [
-  { img: phoneProfile, label: "Profile", delay: 0 },
-  { img: phoneDiscover, label: "Discover", delay: 0.3 },
-  { img: phoneChat, label: "Chat", delay: 0.6 },
+  { img: screenProfile, label: "Profile", floatDuration: 4, floatDelay: 0, rotation: [-1.5, 1.5, -1.5] },
+  { img: screenDiscover, label: "Discover", floatDuration: 5, floatDelay: 0.4, rotation: [1, -1, 1] },
+  { img: screenChat, label: "Chat", floatDuration: 3.5, floatDelay: 0.8, rotation: [1.5, -1.5, 1.5] },
 ];
 
-const FloatingParticles = () => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const resize = () => {
-      canvas.width = canvas.offsetWidth * window.devicePixelRatio;
-      canvas.height = canvas.offsetHeight * window.devicePixelRatio;
-      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-    };
-    resize();
-    window.addEventListener("resize", resize);
-
-    const particles = Array.from({ length: 30 }, () => ({
-      x: Math.random() * canvas.offsetWidth,
-      y: Math.random() * canvas.offsetHeight,
-      r: Math.random() * 2 + 1,
-      dx: (Math.random() - 0.5) * 0.3,
-      dy: (Math.random() - 0.5) * 0.3,
-      color: ["#FF4FD8", "#FF7E7E", "#FFD93D", "#7EDCFF", "#8F7CFF"][Math.floor(Math.random() * 5)],
-    }));
-
-    let raf: number;
-    const draw = () => {
-      ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
-      for (const p of particles) {
-        p.x += p.dx;
-        p.y += p.dy;
-        if (p.x < 0 || p.x > canvas.offsetWidth) p.dx *= -1;
-        if (p.y < 0 || p.y > canvas.offsetHeight) p.dy *= -1;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = p.color + "40";
-        ctx.fill();
-      }
-      raf = requestAnimationFrame(draw);
-    };
-    draw();
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("resize", resize);
-    };
-  }, []);
-
-  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" />;
-};
-
-const PhoneCard = ({ screen, index }: { screen: typeof screens[0]; index: number }) => {
+const PhoneMockup = ({ screen, index }: { screen: typeof screens[number]; index: number }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const isCenter = index === 1;
 
@@ -70,7 +19,7 @@ const PhoneCard = ({ screen, index }: { screen: typeof screens[0]; index: number
     const rect = cardRef.current.getBoundingClientRect();
     const x = (e.clientX - rect.left - rect.width / 2) / rect.width;
     const y = (e.clientY - rect.top - rect.height / 2) / rect.height;
-    cardRef.current.style.transform = `rotateY(${x * 8}deg) rotateX(${-y * 8}deg)`;
+    cardRef.current.style.transform = `rotateY(${x * 6}deg) rotateX(${-y * 6}deg)`;
   }, []);
 
   const handleMouseLeave = useCallback(() => {
@@ -79,47 +28,69 @@ const PhoneCard = ({ screen, index }: { screen: typeof screens[0]; index: number
 
   return (
     <motion.div
-      className="relative group"
-      initial={{ opacity: 0, y: 80 }}
+      className="flex flex-col items-center group"
+      initial={{ opacity: 0, y: 60 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.7, delay: index * 0.15 }}
+      transition={{ duration: 0.7, delay: index * 0.2 }}
     >
-      {/* Wave float animation wrapper */}
+      {/* Independent float animation */}
       <motion.div
-        animate={{ y: [0, -14, 0], rotate: [0, index === 0 ? -1.5 : index === 2 ? 1.5 : 1, 0] }}
+        animate={{
+          y: [0, -12, 0],
+          rotate: screen.rotation,
+        }}
         transition={{
-          duration: 4,
+          duration: screen.floatDuration,
           repeat: Infinity,
           ease: "easeInOut",
-          delay: screen.delay,
+          delay: screen.floatDelay,
         }}
+        className="relative"
       >
+        {/* Per-phone glow blob */}
+        <div className="absolute -inset-8 gradient-rainbow-bg opacity-0 group-hover:opacity-20 rounded-[32px] blur-2xl transition-opacity duration-500 pointer-events-none" />
+        <motion.div
+          className="absolute -inset-6 rounded-[32px] blur-[50px] opacity-10 pointer-events-none"
+          style={{
+            background: index === 0
+              ? "hsl(var(--hq-pink))"
+              : index === 1
+              ? "hsl(var(--hq-violet))"
+              : "hsl(var(--hq-sky))",
+          }}
+          animate={{ opacity: [0.08, 0.15, 0.08] }}
+          transition={{ duration: 4, repeat: Infinity }}
+        />
+
         <motion.div
           ref={cardRef}
           className="relative cursor-pointer"
           style={{ perspective: 800, transformStyle: "preserve-3d" }}
-          whileHover={{ scale: 1.06, zIndex: 10 }}
+          whileHover={{ scale: 1.05, zIndex: 10 }}
           transition={{ duration: 0.3 }}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
         >
-          {/* Rainbow glow on hover */}
-          <div className="absolute -inset-3 gradient-rainbow-bg opacity-0 group-hover:opacity-25 rounded-3xl blur-xl transition-opacity duration-500" />
-
-          <img
-            src={screen.img}
-            alt={`${screen.label} Screen`}
-            className={`relative rounded-3xl drop-shadow-xl ${isCenter ? "w-56 md:w-64" : "w-48 md:w-56"}`}
-            loading="lazy"
-          />
-
-          {/* Reflection */}
-          <div className="absolute bottom-0 left-0 right-0 h-1/5 bg-gradient-to-t from-white/15 to-transparent rounded-b-3xl" />
+          {/* Device frame */}
+          <div className={`relative rounded-[24px] overflow-hidden shadow-xl group-hover:shadow-2xl transition-shadow duration-300 ${
+            isCenter ? "w-56 md:w-64" : "w-48 md:w-56"
+          }`}>
+            {/* Gradient border effect */}
+            <div className="absolute -inset-[1px] gradient-rainbow-bg rounded-[24px] opacity-0 group-hover:opacity-40 transition-opacity duration-500" />
+            <img
+              src={screen.img}
+              alt={`${screen.label} Screen`}
+              className="relative w-full rounded-[24px]"
+              loading="lazy"
+            />
+            {/* Reflection */}
+            <div className="absolute bottom-0 left-0 right-0 h-1/6 bg-gradient-to-t from-white/10 to-transparent rounded-b-[24px]" />
+          </div>
         </motion.div>
       </motion.div>
 
-      <p className="text-center font-heading text-sm mt-4 text-muted-foreground group-hover:text-foreground transition-colors">
+      <p className="font-heading text-sm mt-5 text-muted-foreground group-hover:text-foreground transition-colors duration-300">
         {screen.label}
       </p>
     </motion.div>
@@ -129,31 +100,6 @@ const PhoneCard = ({ screen, index }: { screen: typeof screens[0]; index: number
 const HelloQInAction = () => {
   return (
     <section className="py-32 overflow-hidden relative">
-      <FloatingParticles />
-
-      {/* Background blobs */}
-      <motion.div
-        className="absolute w-44 h-44 rounded-full blur-[80px] opacity-20"
-        style={{ background: "hsl(var(--hq-pink))", left: "15%", top: "30%" }}
-        animate={{ y: [0, -20, 0] }}
-        transition={{ duration: 7, repeat: Infinity }}
-      />
-      <motion.div
-        className="absolute w-36 h-36 rounded-full blur-[80px] opacity-20"
-        style={{ background: "hsl(var(--hq-sky))", right: "15%", top: "40%" }}
-        animate={{ y: [0, 20, 0] }}
-        transition={{ duration: 8, repeat: Infinity }}
-      />
-      <motion.div
-        className="absolute w-40 h-40 rounded-full blur-[80px] opacity-15"
-        style={{ background: "hsl(var(--hq-violet))", left: "50%", bottom: "20%" }}
-        animate={{ y: [0, -15, 0] }}
-        transition={{ duration: 6, repeat: Infinity }}
-      />
-
-      {/* Glow ring */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full border border-primary/10 animate-glow-pulse pointer-events-none" />
-
       <div className="max-w-[1200px] mx-auto px-6 relative z-10">
         <motion.div
           className="text-center mb-20"
@@ -170,9 +116,10 @@ const HelloQInAction = () => {
           </p>
         </motion.div>
 
-        <div className="flex justify-center items-end gap-6 md:gap-10">
+        {/* 3-column grid — no overlap */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8 place-items-center">
           {screens.map((screen, i) => (
-            <PhoneCard key={screen.label} screen={screen} index={i} />
+            <PhoneMockup key={screen.label} screen={screen} index={i} />
           ))}
         </div>
       </div>
