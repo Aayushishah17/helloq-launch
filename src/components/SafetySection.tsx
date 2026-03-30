@@ -31,11 +31,11 @@ const SafetySection = () => {
             <motion.div
               key={card.title}
               className="glass-card p-8 text-center"
-              initial={{ opacity: 0, y: 50 }}
+              initial={{ opacity: 0, y: 60 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.15 }}
-              whileHover={{ y: -6 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.6, delay: i * 0.15, ease: "easeOut" }}
+              whileHover={{ y: -6, boxShadow: "0 12px 40px -8px rgba(255, 79, 216, 0.2)" }}
             >
               <div className="w-16 h-16 rounded-2xl gradient-rainbow-bg flex items-center justify-center mx-auto mb-6">
                 <card.icon size={28} className="text-primary-foreground" />
