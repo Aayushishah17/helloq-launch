@@ -19,6 +19,7 @@ const Index = () => {
       <HeroSection />
       <VideoSection />
       <PhoneCarousel />
+      <HelloQInAction />
       <FeaturesSection />
       <CommunitySection />
       <AppExperienceSection />
