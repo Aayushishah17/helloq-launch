@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import VideoSection from "@/components/VideoSection";
 import PhoneCarousel from "@/components/PhoneCarousel";
+import HelloQInAction from "@/components/HelloQInAction";
 import FeaturesSection from "@/components/FeaturesSection";
 import CommunitySection from "@/components/CommunitySection";
 import AppExperienceSection from "@/components/AppExperienceSection";
@@ -18,6 +19,7 @@ const Index = () => {
       <HeroSection />
       <VideoSection />
       <PhoneCarousel />
+      <HelloQInAction />
       <FeaturesSection />
       <CommunitySection />
       <AppExperienceSection />
